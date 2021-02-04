@@ -1,8 +1,14 @@
 from django.shortcuts import render
 
+from .models import Product
+
 
 def store(request):
-	context = {}
+
+	products = Product.objects.all()
+	context = {
+		"products": products,
+	}
 	return render(request, "store/store.html", context)
 
 

@@ -1,4 +1,29 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %} Store {% endblock %}
+
 {% block content %}
-<h3> Store </h3>
+	
+	<div class="row">
+		{% for product in products %}
+			{% if not product.draft %}
+				<div class="col-lg-4">
+					{% if product.image %}
+						<img src="{{ product.image.url }}" class="thumbnail">
+					{% else %}
+						<img src="{% static 'img/no-image-found.png' %}" class="thumbnail">
+					{% endif %}
+					<div class="box-element product">
+						<h6><strong> {{ product.name }} </strong></h6>
+						<hr>
+						<button class="btn btn-outline-secondary add-btn">Add to cart</button>
+						<a href="#" class="btn btn-outline-success"> View </a>
+						<h4 style="display: inline-block; float: right;"> ${{ product.price|floatformat:2 }} </h4>
+					</div>
+				</div>
+			{% endif %}
+		{% endfor %}
+	</div>
+
 {% endblock %}
