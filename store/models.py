@@ -18,13 +18,20 @@ class Customer(models.Model):
 
 class Product(models.Model):
 	""" Продукт """
-	name = models.CharField("Название",max_length=255, null=True)
+	name = models.CharField("Название", max_length=255, null=True)
 	price = models.FloatField("Цена")
 	image = models.ImageField("Картинка",upload_to="products/", null = True, blank = True)
 	draft = models.BooleanField("Черновик",default = False)
 
 	def __str__(self):
 		return self.name
+
+	def imageURL(self):
+		try:
+			url = self.image.url
+		except:
+			url = ''
+		return url
 
 	class Meta:
 		verbose_name = "Продукт"
@@ -41,6 +48,18 @@ class Order(models.Model):
 	def __str__(self):
 		return str(self.id)
 
+	@property
+	def get_cart_total(self):
+		orderitems = self.orderitem_set.all()
+		total = sum([item.get_total for item in orderitems])
+		return total
+
+	@property
+	def get_cart_items(self):
+		orderitems = self.orderitem_set.all()
+		total = sum([item.quantity for item in orderitems])
+		return total
+
 	class Meta:
 		verbose_name = "Заказ"
 		verbose_name_plural = "Заказы"
@@ -52,6 +71,12 @@ class OrderItem(models.Model):
 	order = models.ForeignKey(Order, on_delete = models.SET_NULL, null = True)
 	quantity = models.PositiveSmallIntegerField(default = 0, null = True, blank = True)
 	date_added = models.DateTimeField(auto_now_add = True)
+
+	@property
+	def get_total(self):
+		""" Возвращает общую сумму в корзине """
+		total = self.product.price * self.quantity
+		return total
 
 	class Meta:
 		verbose_name = "Продукт при заказе"

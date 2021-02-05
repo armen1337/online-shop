@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %} Checkout {% endblock %}
+{% block title %} Оформить заказ {% endblock %}
 
 {% block content %}
 	
@@ -11,66 +11,73 @@
 			<form id="form">
 				<div id="user-info">
 					<div class="form-field">
-						<input type="text" class="form-control" name="name" placeholder="Name.." required>
+						<input type="text" class="form-control" name="name" placeholder="Имя.." required>
 					</div>
 
 					<div class="form-field">
-						<input type="email" class="form-control" name="email" placeholder="Email.." required>
+						<input type="email" class="form-control" name="email" placeholder="Электронная почта.." required>
 					</div>
 				</div>
 
 				<div id="shipping-info">
 					<hr>
-					<p>Shipping Information:</p>
+					<p>Информация о доставке:</p>
 						<hr>
 						<div class="form-field">
-							<input class="form-control" type="text" name="address" placeholder="Address..">
+							<input class="form-control" type="text" name="address" placeholder="Адрес..">
 						</div>
 						<div class="form-field">
-							<input class="form-control" type="text" name="city" placeholder="City..">
+							<input class="form-control" type="text" name="city" placeholder="Город..">
 						</div>
 						<div class="form-field">
-							<input class="form-control" type="text" name="state" placeholder="State..">
+							<input class="form-control" type="text" name="state" placeholder="Штат..">
 						</div>
 						<div class="form-field">
-							<input class="form-control" type="text" name="zipcode" placeholder="Zip code..">
+							<input class="form-control" type="text" name="zipcode" placeholder="Почтовый индекс..">
 						</div>
 						<div class="form-field">
-							<input class="form-control" type="text" name="country" placeholder="Country..">
+							<input class="form-control" type="text" name="country" placeholder="Страна..">
 						</div>
 				</div>
 
 				<hr>
-				<input id="form-button" type="submit" value="Continue" class="btn btn-success btn-block">
+				<input id="form-button" type="submit" value="Продолжить" class="btn btn-success btn-block">
 			</form>
 		</div>
 
 		<br>
 
 		<div class="box-element hidden" id="payment-info">
-			<small>Paypal Options</small>
+			<small>Опции Paypal</small>
 		</div>
 
 	</div>
 
 	<div class="col-lg-6">
 		<div class="box-element">
-			<a href="{% url 'cart' %}" class="btn btn-outline-dark">&#x2190; Back to cart</a>
+			<a href="{% url 'cart' %}" class="btn btn-outline-dark">&#x2190; Назад в корзину</a>
 			<hr>
-			<h3>Order summary</h3>
+			<h3>Итог заказа</h3>
 			<hr>
-
-			<div class="cart-row">
-				<div style="flex: 2;">
-					<img src="{% static 'img/640x360.png' %}" class="row-image" style="border: 1px solid gray;">
+			{% for item in items %}
+				<div class="cart-row">
+					<div style="flex: 2;">
+						{% if item.product.imageURL %}
+							<img src="{{ item.product.imageURL }}"
+							class="row-image" style="border: 1px solid gray;">
+						{% else %}
+							<img src="{% static 'img/no-image-found.png' %}"
+							class="row-image" style="border: 1px solid gray;">
+						{% endif %}
+					</div>
+					<div style="flex: 2;"><p>{{ item.product.name }}</p></div>
+					<div style="flex: 1;"><p>${{ item.product.price|floatformat:2 }}</p></div>
+					<div style="flex: 1;"><p>x{{ item.quantity }}</p></div>
 				</div>
-				<div style="flex: 2;"><p>Product</p></div>
-				<div style="flex: 1;"><p>$20</p></div>
-				<div style="flex: 1;"><p>x2</p></div>
-			</div>
+			{% endfor %}
 
-			<h5>Items: 2</h5>
-			<h5>Total: $40</h5>
+			<h5>Предметы: {{ order.get_cart_items }}</h5>
+			<h5>Итого: ${{ order.get_cart_total|floatformat:2 }}</h5>
 		</div>
 	</div>
 </div>
