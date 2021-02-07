@@ -19,7 +19,7 @@ class Customer(models.Model):
 class Product(models.Model):
 	""" Продукт """
 	name = models.CharField("Название", max_length=255, null=True)
-	price = models.FloatField("Цена")
+	price = models.DecimalField("Цена", max_digits = 7, decimal_places = 2)
 	image = models.ImageField("Картинка",upload_to="products/", null = True, blank = True)
 	draft = models.BooleanField("Черновик",default = False)
 
