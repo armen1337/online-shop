@@ -29,6 +29,7 @@
     }
     var csrftoken = getToken('csrftoken');
 
+
     function getCookie(name) {
       var cookieArr = document.cookie.split(";");
 
@@ -46,11 +47,8 @@
 
     if(cart == undefined) {
       cart = {}
-      console.log("Cart was created");
       document.cookie = "cart=" + JSON.stringify(cart) + ";domain=;path=/"
     }
-
-    console.log("Cart:", cart)
 
   </script>
 </head>

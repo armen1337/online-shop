@@ -16,8 +16,13 @@
 						<th><h5> Предметы: <strong>{{ order.get_cart_items }}</strong></h5></th>
 						<th><h5> Итого: <strong>${{ order.get_cart_total }}</strong></h5></th>
 						<th>
-							<a href="{% url 'checkout' %}" class="btn btn-success" style="float: right; margin: 5px;"> Оформить заказ
-							</a>
+							{% if user.is_authenticated %}
+								<a href="{% url 'checkout' %}" class="btn btn-success" style="float: right; margin: 5px;"> Оформить заказ
+								</a>
+							{% else %}
+								<a href="{% url 'register' %}" class="btn btn-success" style="float: right; margin: 5px;"> Оформить заказ
+								</a>
+							{% endif %}
 						</th>
 					</tr>
 				</table>

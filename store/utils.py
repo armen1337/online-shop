@@ -6,7 +6,7 @@ from .models import Order, Product, Customer
 
 
 def get_order_and_items(request):
-	""" Возвращает заказ и список товаров """
+	""" Возвращает заказ и список товаров корзины """
 	if request.user.is_authenticated:
 		try:
 			customer = request.user.customer
@@ -17,6 +17,7 @@ def get_order_and_items(request):
 					email = request.user.email
 				)
 			customer.save()
+
 
 		order, created = Order.objects.get_or_create(customer=customer, complete=False)
 		items = order.orderitem_set.all()

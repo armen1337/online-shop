@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import JsonResponse
 
 import json
@@ -30,6 +30,8 @@ def cart(request):
 
 
 def checkout(request):
+	if not request.user.is_authenticated:
+		return redirect("home")
 	order_and_items = get_order_and_items(request)
 
 	context = {
@@ -43,9 +45,6 @@ def update_item(request):
 	data = json.loads(request.body)
 	productId = data['productId']
 	action = data['action']
-
-	print("Action:", action)
-	print("Product ID:", productId)
 
 	customer = request.user.customer
 	product = Product.objects.get(id=productId)

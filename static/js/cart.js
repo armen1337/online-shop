@@ -4,8 +4,6 @@ for (i = 0; i < updateBtns.length; i++) {
 	updateBtns[i].addEventListener('click', function(){
 		var productId = this.dataset.product  // data-product
 		var action = this.dataset.action  // data-action
-		console.log('productId:', productId, 'Action:', action)
-		console.log('USER:', user)
 
 		if (user == 'AnonymousUser'){
 			addCookieItem(productId, action)
@@ -16,7 +14,6 @@ for (i = 0; i < updateBtns.length; i++) {
 }
 
 function addCookieItem(productId, action){
-	console.log('User is not authenticated')
 
 	if (action == 'add'){
 		if (cart[productId] == undefined){
@@ -31,7 +28,6 @@ function addCookieItem(productId, action){
 		cart[productId]['quantity'] -= 1
 
 		if (cart[productId]['quantity'] <= 0){
-			console.log('Item should be deleted')
 			delete cart[productId];
 		}
 	}
@@ -48,7 +44,7 @@ function updateUserOrder(productId, action){
 
 		fetch(url, {
 			method:'POST',
-			headers:{
+			headers: {
 				'Content-Type':'application/json',
 				'X-CSRFToken':csrftoken,
 			}, 

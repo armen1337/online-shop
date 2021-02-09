@@ -66,7 +66,7 @@ class Order(models.Model):
 
 
 class OrderItem(models.Model):
-	""" Продукт при заказе """
+	""" Продукт при заказе / в корзине """
 	product = models.ForeignKey(Product, on_delete = models.SET_NULL, null = True)
 	order = models.ForeignKey(Order, on_delete = models.SET_NULL, null = True)
 	quantity = models.PositiveSmallIntegerField(default = 0, null = True, blank = True)

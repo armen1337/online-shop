@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
+
 from .forms import RegisterForm
+from .utils import load_cookies_to_user_cart
 
 
 def register_index(request):
@@ -14,6 +16,8 @@ def register_index(request):
 			user = authenticate(username = request.POST["username"], password = request.POST["password1"])
 			if user is not None:
 				login(request, user)
+
+			load_cookies_to_user_cart(request)
 
 			return redirect("home")
 	else:
