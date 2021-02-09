@@ -1,5 +1,5 @@
-from django.db import models
 from django.contrib.auth.models import User
+from django.db import models
 
 
 class Customer(models.Model):
@@ -78,9 +78,12 @@ class OrderItem(models.Model):
 		total = self.product.price * self.quantity
 		return total
 
+	def __str__(self):
+		return self.product.name
+
 	class Meta:
-		verbose_name = "Продукт при заказе"
-		verbose_name_plural = "Продукты при заказе"
+		verbose_name = "Заказанный продукт"
+		verbose_name_plural = "Заказанные продукты"
 
 
 class ShippingAddress(models.Model):

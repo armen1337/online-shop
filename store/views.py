@@ -8,7 +8,7 @@ from .models import Product, Order, OrderItem, ShippingAddress
 from .utils import get_order_and_items
 
 
-def store(request):
+def home(request):
 	products = Product.objects.all()
 	cartItems = get_order_and_items(request)["cartItems"]
 
@@ -16,7 +16,7 @@ def store(request):
 		"products": products,
 		"cartItems": cartItems,
 	}
-	return render(request, "store/store.html", context)
+	return render(request, "store/home.html", context)
 
 
 def cart(request):
@@ -78,6 +78,7 @@ def process_order(request):
 
 		if float(total) == float(order.get_cart_total):
 			order.complete = True
+
 		order.save()
 
 		ShippingAddress.objects.create(

@@ -2,13 +2,22 @@ from django.core.exceptions import ObjectDoesNotExist
 
 import json
 
-from .models import Order, Product
+from .models import Order, Product, Customer
 
 
 def get_order_and_items(request):
 	""" Возвращает заказ и список товаров """
 	if request.user.is_authenticated:
-		customer = request.user.customer
+		try:
+			customer = request.user.customer
+		except:
+			customer = Customer.objects.create(
+					user = request.user,
+					name = request.user.username,
+					email = request.user.email
+				)
+			customer.save()
+
 		order, created = Order.objects.get_or_create(customer=customer, complete=False)
 		items = order.orderitem_set.all()
 		cartItems = order.get_cart_items

@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %} Sign in {% endblock %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+{% if user.is_authenticated %}
+	<script type="text/javascript">
+		window.location.href = "{% url 'home' %}"
+	</script>
+{% endif %}
+
+<div class="features">
+	<h1> Login into your account </h1>
+	<form method="POST" class="form-group">
+		{% csrf_token %}
+		{{ form|crispy }}
+		<a href="{% url 'register' %}"> Don't have an account? </a><br>
+		<button type="submit" class="btn btn-warning" style="margin-top: 20px;"> Sign in </button>
+	</form>
+</div>
+{% endblock %}
