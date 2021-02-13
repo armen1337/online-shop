@@ -1,5 +1,26 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models.signals import pre_save
+
+
+class Category(models.Model):
+	""" Категория """
+	parent = models.ForeignKey(
+			'self',
+			related_name = 'children',
+			on_delete = models.CASCADE,
+			blank = True,
+			null = True
+		)
+	name = models.CharField("Название (30 макс.)", max_length=30, unique = True)
+	url = models.SlugField("URL", unique = True, blank = True)
+
+	def __str__(self):
+		return self.name
+
+	class Meta:
+		verbose_name = "Категория"
+		verbose_name_plural = "Категории"
 
 
 class Customer(models.Model):
@@ -20,8 +41,14 @@ class Product(models.Model):
 	""" Продукт """
 	name = models.CharField("Название", max_length=255, null=True)
 	price = models.DecimalField("Цена", max_digits = 7, decimal_places = 2)
-	image = models.ImageField("Картинка",upload_to="products/", null = True, blank = True)
-	draft = models.BooleanField("Черновик",default = False)
+	image = models.ImageField("Картинка", upload_to="products/", null = True, blank = True)
+	draft = models.BooleanField("Черновик", default = False)
+	category = models.ForeignKey(
+			Category,
+			related_name = 'products',
+			on_delete = models.SET_NULL,
+			null = True
+		)
 
 	def __str__(self):
 		return self.name
@@ -40,7 +67,12 @@ class Product(models.Model):
 
 class Order(models.Model):
 	""" Заказ """
-	customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True, blank=True)
+	customer = models.ForeignKey(
+			Customer,
+			on_delete=models.SET_NULL,
+			null=True,
+			blank=True
+		)
 	date_ordered = models.DateTimeField(auto_now_add = True)
 	complete = models.BooleanField(default = False)
 	transaction_id = models.CharField(max_length = 200, null = True)
@@ -67,8 +99,16 @@ class Order(models.Model):
 
 class OrderItem(models.Model):
 	""" Продукт при заказе / в корзине """
-	product = models.ForeignKey(Product, on_delete = models.SET_NULL, null = True)
-	order = models.ForeignKey(Order, on_delete = models.SET_NULL, null = True)
+	product = models.ForeignKey(
+			Product,
+			on_delete = models.SET_NULL,
+			null = True
+		)
+	order = models.ForeignKey(
+			Order,
+			on_delete = models.SET_NULL,
+			null = True
+		)
 	quantity = models.PositiveSmallIntegerField(default = 0, null = True, blank = True)
 	date_added = models.DateTimeField(auto_now_add = True)
 
@@ -87,12 +127,23 @@ class OrderItem(models.Model):
 
 
 class ShippingAddress(models.Model):
-	customer = models.ForeignKey(Customer, on_delete = models.SET_NULL, null = True, blank = True)
-	order = models.ForeignKey(Order, on_delete = models.SET_NULL, null = True, blank = True)
+	customer = models.ForeignKey(
+			Customer,
+			on_delete = models.SET_NULL,
+			null = True,
+			blank = True
+		)
+	order = models.ForeignKey(
+			Order,
+			on_delete = models.SET_NULL,
+			null = True,
+			blank = True
+		)
 	address = models.CharField(max_length = 200, null = True)
 	city = models.CharField(max_length = 200, null = True)
 	zip_code = models.CharField(max_length = 200, null = True)
 	date_added = models.DateTimeField(auto_now_add = True)
+	default_address = models.BooleanField("Адрес по умолчанию", default = False)
 
 	def __str__(self):
 		return self.address
@@ -100,3 +151,24 @@ class ShippingAddress(models.Model):
 	class Meta:
 		verbose_name = "Адрес доставки"
 		verbose_name_plural = "Адреса доставки"
+
+
+def create_slug(instance, new_slug = None):
+	slug = instance.name.lower().replace(' ', '-')
+	if new_slug is not None:
+		slug = new_slug
+
+	queryset = Category.objects.filter(url=slug).order_by("-id")
+
+	if queryset.exists():
+		new_slug = "%s-%s"%(slug, queryset.first().id)
+		return create_slug(instance, new_slug = new_slug)
+	return slug
+
+
+def pre_save_category(sender, instance, *args, **kwargs):
+	if not instance.url:
+		instance.url = create_slug(instance)
+
+
+pre_save.connect(pre_save_category, Category)

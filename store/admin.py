@@ -1,13 +1,12 @@
 from django.contrib import admin
 
-from .models import (Customer, Product, Order,
+from .models import (Category, Customer, Product, Order,
 	OrderItem, ShippingAddress)
 
 
 admin.site.site_title = "Онлайн магазин"
 admin.site.site_header = "Онлайн магазин"
 
-# admin.site.register(OrderItem)
 
 admin.site.register(Product)
 admin.site.register(ShippingAddress)
@@ -31,18 +30,18 @@ class ShippingAddressInline(admin.StackedInline):
 	extra = 1
 
 
-@admin.register(Customer)
-class CustomerAdmin(admin.ModelAdmin):
-	model = Customer
+# @admin.register(Customer)
+# class CustomerAdmin(admin.ModelAdmin):
+# 	model = Customer
 
-	fieldsets = (
-		(None, {
-				"fields": (("user"), ("name"), ("email"), )
-			}),
-	)
+# 	fieldsets = (
+# 		(None, {
+# 				"fields": (("user"), ("name"), ("email"), )
+# 			}),
+# 	)
 
-	def get_orders_count(self):
-		return len(self.order_set.all()) # error
+# 	def get_orders_count(self):
+# 		return len(self.order_set.all())
 
 
 @admin.register(Order)
@@ -61,4 +60,15 @@ class OrderAdmin(admin.ModelAdmin):
 				"fields": (("customer"), ("date_ordered"), ("complete"), ("transaction_id") )
 			}),
 	)
+
+class CategoryInline(admin.StackedInline):
+	model = Category
+	extra = 1
+
+
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+	model = Category
+
+	inlines = [CategoryInline]
 

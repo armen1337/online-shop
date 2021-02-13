@@ -7,7 +7,7 @@ from .utils import load_cookies_to_user_cart
 
 def register_index(request):
 	if request.user.is_authenticated:
-		return redirect("home", permanent = True)
+		return redirect("home")
 	if request.method == "POST":
 		form = RegisterForm(request.POST)
 		if form.is_valid():

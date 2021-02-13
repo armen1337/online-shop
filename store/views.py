@@ -77,8 +77,9 @@ def process_order(request):
 
 		if float(total) == float(order.get_cart_total):
 			order.complete = True
+			# order.save()
+			pass
 
-		order.save()
 
 		ShippingAddress.objects.create(
 				customer = customer,
@@ -86,10 +87,8 @@ def process_order(request):
 				address = data["shipping"]["address"],
 				city = data["shipping"]["city"],
 				zip_code = data["shipping"]["zipcode"],
+				default_address = form["shipping"]["default_address"]
 			)
-
-	else:
-		print("User is not logged in..")
 
 
 	return JsonResponse("Payment complete!", safe=False)
