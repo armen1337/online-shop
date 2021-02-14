@@ -8,13 +8,13 @@ admin.site.site_title = "Онлайн магазин"
 admin.site.site_header = "Онлайн магазин"
 
 
-admin.site.register(Product)
 admin.site.register(ShippingAddress)
 
 
 class OrderItemInline(admin.StackedInline):
 	model = OrderItem
 	extra = 0
+	classes = ("collapse",)
 
 	readonly_fields = ('product', 'quantity', "date_added")
 
@@ -27,37 +27,33 @@ class OrderItemInline(admin.StackedInline):
 
 class ShippingAddressInline(admin.StackedInline):
 	model = ShippingAddress
-	extra = 1
-
-
-# @admin.register(Customer)
-# class CustomerAdmin(admin.ModelAdmin):
-# 	model = Customer
-
-# 	fieldsets = (
-# 		(None, {
-# 				"fields": (("user"), ("name"), ("email"), )
-# 			}),
-# 	)
-
-# 	def get_orders_count(self):
-# 		return len(self.order_set.all())
+	extra = 0
+	classes = ("collapse",)
 
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
 	model = Order
 
+	# save_on_top = True
+
 	list_filter = ("complete",)
 	list_display = ("id", "customer", "complete")
+	list_display_links = ("id", "customer")
 
 	readonly_fields = ("date_ordered",)
 
-	inlines = [OrderItemInline]
+	inlines = [ShippingAddressInline, OrderItemInline]
 
 	fieldsets = (
 		("Информация о заказе", {
-				"fields": (("customer"), ("date_ordered"), ("complete"), ("transaction_id") )
+				"fields": (
+						("customer"),
+						("date_ordered"),
+						("complete"),
+						("transaction_id"),
+						("confirmed")
+					)
 			}),
 	)
 
@@ -72,3 +68,8 @@ class CategoryAdmin(admin.ModelAdmin):
 
 	inlines = [CategoryInline]
 
+
+@admin.register(Product)
+class ProductAdmin(admin.ModelAdmin):
+	list_display = ("name", "price", "category", "draft")
+	list_editable = ("draft",)

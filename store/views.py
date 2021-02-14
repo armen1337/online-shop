@@ -5,16 +5,26 @@ import json
 import datetime
 
 from .models import Product, Order, OrderItem, ShippingAddress
-from .utils import get_order_and_items
+from .utils import (get_order_and_items,
+	order_processing, item_updating)
 
 
 def home(request):
 	products = Product.objects.all()
 	cartItems = get_order_and_items(request)["cartItems"]
 
+	if request.user.is_authenticated:
+		orders = Order.objects.filter(customer = request.user.customer)
+		first_order = orders[0]
+	else:
+		orders = []
+		first_order = None
+
 	context = {
 		"products": products,
 		"cartItems": cartItems,
+		"orders": orders,
+		"first_order": first_order
 	}
 	return render(request, "store/home.html", context)
 
@@ -42,53 +52,29 @@ def checkout(request):
 
 
 def update_item(request):
-	data = json.loads(request.body)
-	productId = data['productId']
-	action = data['action']
-
-	customer = request.user.customer
-	product = Product.objects.get(id=productId)
-	order, created = Order.objects.get_or_create(customer=customer, complete=False)
-
-	orderItem, created = OrderItem.objects.get_or_create(order=order, product=product)
-
-	if action == "add":
-		orderItem.quantity = (orderItem.quantity + 1)
-	elif action == "remove":
-		orderItem.quantity = (orderItem.quantity - 1)
-
-	orderItem.save()
-
-	if orderItem.quantity <= 0:
-		orderItem.delete()
+	""" Updates an item quantity in cart.
+	If an item quantity reaches 0, the item
+	is automatically removed from the cart.
+	"""
+	item_updating(request)
 
 	return JsonResponse("Item was added", safe=False)
 
 
 def process_order(request):
-	transaction_id = datetime.datetime.now().timestamp()
+	transaction_id = str(datetime.datetime.now().timestamp()).replace(".", "")
 	data = json.loads(request.body)
 
 	if request.user.is_authenticated:
-		customer = request.user.customer
-		order, created = Order.objects.get_or_create(customer=customer, complete=False)
-		total = float( data["form"]["total"].replace(',', '.') )
-		order.transaction_id = transaction_id
-
-		if float(total) == float(order.get_cart_total):
-			order.complete = True
-			# order.save()
-			pass
-
-
-		ShippingAddress.objects.create(
-				customer = customer,
-				order = order,
-				address = data["shipping"]["address"],
-				city = data["shipping"]["city"],
-				zip_code = data["shipping"]["zipcode"],
-				default_address = form["shipping"]["default_address"]
-			)
-
+		order_processing(request, data, transaction_id)
 
 	return JsonResponse("Payment complete!", safe=False)
+
+
+def order_detail(request, transaction_id):
+	order = Order.objects.get(transaction_id=transaction_id)
+
+	context = {
+		"order": order
+	}
+	return render(request, "store/order_detail.html", context)

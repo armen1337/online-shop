@@ -1,12 +1,19 @@
 from django.core.exceptions import ObjectDoesNotExist
 
 import json
+from random import randint
 
-from .models import Order, Product, Customer
+from .models import (Order, Product,
+	Customer, ShippingAddress, OrderItem)
 
 
 def get_order_and_items(request):
-	""" Возвращает заказ и список товаров корзины """
+	""" Returns an order and a list of cart items
+	Also, if user is authenticated, then it will
+	return "order", "items" and "cartItems" from database
+	normally, but if user is not authenticated,
+	then it will deal with cookies.
+	"""
 	if request.user.is_authenticated:
 		try:
 			customer = request.user.customer
@@ -65,3 +72,45 @@ def get_order_and_items(request):
 		"items": items,
 		"cartItems": cartItems
 	}
+
+
+def order_processing(request, json_data, transaction_id):
+	customer = request.user.customer
+	order, created = Order.objects.get_or_create(customer=customer, complete=False)
+	total = float( json_data["form"]["total"].replace(',', '.') )
+	order.transaction_id = transaction_id + str(randint(1000,5000))
+
+	if float(total) == float(order.get_cart_total):
+		order.complete = True
+		order.save()
+
+
+	ShippingAddress.objects.create(
+			customer = customer,
+			order = order,
+			address = json_data["shipping"]["address"],
+			city = json_data["shipping"]["city"],
+			zip_code = json_data["shipping"]["zipcode"],
+		)
+
+
+def item_updating(request):
+	data = json.loads(request.body)
+	productId = data['productId']
+	action = data['action']
+
+	customer = request.user.customer
+	product = Product.objects.get(id=productId)
+	order, created = Order.objects.get_or_create(customer=customer, complete=False)
+
+	orderItem, created = OrderItem.objects.get_or_create(order=order, product=product)
+
+	if action == "add":
+		orderItem.quantity = (orderItem.quantity + 1)
+	elif action == "remove":
+		orderItem.quantity = (orderItem.quantity - 1)
+
+	orderItem.save()
+
+	if orderItem.quantity <= 0:
+		orderItem.delete()

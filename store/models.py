@@ -66,7 +66,9 @@ class Product(models.Model):
 
 
 class Order(models.Model):
-	""" Заказ """
+	""" If order's complete parameter is false,
+	then the order is in "cart" condition.
+	"""
 	customer = models.ForeignKey(
 			Customer,
 			on_delete=models.SET_NULL,
@@ -76,6 +78,7 @@ class Order(models.Model):
 	date_ordered = models.DateTimeField(auto_now_add = True)
 	complete = models.BooleanField(default = False)
 	transaction_id = models.CharField(max_length = 200, null = True)
+	confirmed = models.BooleanField(default = False)
 
 	def __str__(self):
 		return str(self.id)
@@ -91,6 +94,9 @@ class Order(models.Model):
 		orderitems = self.orderitem_set.all()
 		total = sum([item.quantity for item in orderitems])
 		return total
+
+	def get_absolute_url(self):
+		return "order={}".format(self.transaction_id)
 
 	class Meta:
 		verbose_name = "Заказ"
@@ -143,7 +149,6 @@ class ShippingAddress(models.Model):
 	city = models.CharField(max_length = 200, null = True)
 	zip_code = models.CharField(max_length = 200, null = True)
 	date_added = models.DateTimeField(auto_now_add = True)
-	default_address = models.BooleanField("Адрес по умолчанию", default = False)
 
 	def __str__(self):
 		return self.address

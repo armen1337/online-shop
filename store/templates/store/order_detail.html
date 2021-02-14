@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}  Заказ N{{ order.transaction_id }} ({{ order.get_cart_total }}$) {% endblock %}
+
+{% block content %}
+	<h3> Заказ N{{ order.transaction_id }}
+		<i>({{ order.get_cart_total }}$)</i>
+	</h3>
+	<h5> Статус:
+		{% if order.confirmed %}
+			<i> Принято для отправки </i>
+		{% else %}
+			<i> Обрабатывается </i>
+		{% endif %}
+	</h5>
+
+	<h5 style="margin: 30px 0;"> Заказанные продукты ({{ order.get_cart_items }}) </h5>
+
+	<ul>
+		{% for order_item in order.orderitem_set.all %}
+			<li>
+				<p>{{ order_item.product.name }} - x{{ order_item.quantity }} |
+					<i> Итого: {{ order_item.get_total }}$ </i>
+				</p>
+			</li>
+		{% endfor %}
+	</ul>
+{% endblock %}

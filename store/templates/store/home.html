@@ -5,6 +5,21 @@
 
 {% block content %}
 	
+	<div>
+		{% if first_order.complete %}
+			<h3> Мои заказы </h3>
+		{% endif %}
+		{% for order in orders %}
+			{% if order.complete %}
+				<p><a href="{{ order.get_absolute_url }}"> {{ order.transaction_id }} </a>
+					{% if order.confirmed %}
+						<i> - Принято для отправки </i>
+					{% endif %}
+				</p>
+			{% endif %}
+		{% endfor %}
+	</div>
+
 	<div class="row">
 		{% for product in products %}
 			{% if not product.draft %}

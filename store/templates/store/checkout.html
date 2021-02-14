@@ -34,9 +34,6 @@
 					<div class="form-field">
 						<input class="form-control" type="text" name="zipcode" placeholder="Почтовый индекс.." required>
 					</div>
-					<div style="margin: 20px 0px;"> Адрес по умолчанию:
-						<input type="checkbox" name="default_address">
-					</div>
 				</div>
 
 				<hr>
@@ -117,14 +114,12 @@
 		var shippingInfo = {
 			"address": null,
 			"zipcode": null,
-			"city": null,
-			"default_address": False
+			"city": null
 		}
 
 		shippingInfo.address = form.address.value
 		shippingInfo.zipcode = form.zipcode.value
 		shippingInfo.city = form.city.value
-		shippingInfo.default_address = form.default_address.value
 
 		if(user == "AnonymousUser"){
 			userFormData.name = form.name.value
