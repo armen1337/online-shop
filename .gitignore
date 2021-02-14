@@ -1,4 +1,3 @@
 venv/
 *.odt
-/config/settings/local
 env_vars.sh

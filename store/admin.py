@@ -29,6 +29,7 @@ class ShippingAddressInline(admin.StackedInline):
 	model = ShippingAddress
 	extra = 0
 	classes = ("collapse",)
+	add_form_template = False
 
 
 @admin.register(Order)
@@ -60,6 +61,9 @@ class OrderAdmin(admin.ModelAdmin):
 class CategoryInline(admin.StackedInline):
 	model = Category
 	extra = 1
+	classes = ("collapse",)
+	verbose_name = "Подкатегория"
+	verbose_name_plural = "Подкатегории"
 
 
 @admin.register(Category)

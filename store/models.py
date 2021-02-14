@@ -4,7 +4,8 @@ from django.db.models.signals import pre_save
 
 
 class Category(models.Model):
-	""" Категория """
+	""" Category and subcategory (that can
+	be accessed with related name below) """
 	parent = models.ForeignKey(
 			'self',
 			related_name = 'children',
@@ -24,7 +25,7 @@ class Category(models.Model):
 
 
 class Customer(models.Model):
-	""" Клиент """
+	""" Customer """
 	user = models.OneToOneField(User, null=True, blank=True, on_delete=models.CASCADE)
 	name = models.CharField(max_length = 200, null=True)
 	email = models.CharField(max_length=200, null=True)
@@ -38,7 +39,7 @@ class Customer(models.Model):
 
 
 class Product(models.Model):
-	""" Продукт """
+	""" Product """
 	name = models.CharField("Название", max_length=255, null=True)
 	price = models.DecimalField("Цена", max_digits = 7, decimal_places = 2)
 	image = models.ImageField("Картинка", upload_to="products/", null = True, blank = True)
@@ -104,7 +105,9 @@ class Order(models.Model):
 
 
 class OrderItem(models.Model):
-	""" Продукт при заказе / в корзине """
+	""" Same "Product" model but with capacity
+	of changing the quantity.
+	"""
 	product = models.ForeignKey(
 			Product,
 			on_delete = models.SET_NULL,
@@ -133,6 +136,7 @@ class OrderItem(models.Model):
 
 
 class ShippingAddress(models.Model):
+	""" Shipping address of customer """
 	customer = models.ForeignKey(
 			Customer,
 			on_delete = models.SET_NULL,
