@@ -9,6 +9,7 @@
 	<li> Finally, run the server </li>
 </ul>
 <h5> Or you can just type following command </h5>
+
 ```
 export SECRET_KEY='your_key'
 ```
