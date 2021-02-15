@@ -4,19 +4,6 @@
 {% block title %} Онлайн магазин {% endblock %}
 
 {% block content %}
-	
-	<div>
-		{% if is_any_complete %}
-			<h3> Мои заказы </h3>
-		{% endif %}
-		{% for order in orders %}
-			{% if order.complete %}
-				<p><a href="{{ order.get_absolute_url }}"> {{ order.transaction_id }}</a>
-					<i> - {{ order.status.name }} </i>
-				</p>
-			{% endif %}
-		{% endfor %}
-	</div>
 
 	<div class="row">
 		{% for product in products %}
@@ -36,6 +23,19 @@
 						<h4 style="display: inline-block; float: right;"> ${{ product.price }} </h4>
 					</div>
 				</div>
+			{% endif %}
+		{% endfor %}
+	</div>
+
+	<div>
+		{% if is_any_complete %}
+			<h3 style="margin: 40px 0;"> Мои заказы </h3>
+		{% endif %}
+		{% for order in orders %}
+			{% if order.complete %}
+				<p><a href="{{ order.get_absolute_url }}"> {{ order.transaction_id }}</a>
+					<i> - {{ order.status.name }} </i>
+				</p>
 			{% endif %}
 		{% endfor %}
 	</div>
