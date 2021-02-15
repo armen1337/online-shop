@@ -7,11 +7,7 @@
 		<i>({{ order.get_cart_total }}$)</i>
 	</h3>
 	<h5> Статус:
-		{% if order.confirmed %}
-			<i> Принято для отправки </i>
-		{% else %}
-			<i> Обрабатывается </i>
-		{% endif %}
+		<i> {{ order.status.name }} </i>
 	</h5>
 
 	<h5 style="margin: 30px 0;"> Заказанные продукты ({{ order.get_cart_items }}) </h5>

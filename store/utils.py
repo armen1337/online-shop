@@ -3,8 +3,8 @@ from django.core.exceptions import ObjectDoesNotExist
 import json
 from random import randint
 
-from .models import (Order, Product,
-	Customer, ShippingAddress, OrderItem)
+from .models import (Order, Product, Customer,
+	ShippingAddress, Status, OrderItem)
 
 
 def get_order_and_items(request):
@@ -24,7 +24,6 @@ def get_order_and_items(request):
 					email = request.user.email
 				)
 			customer.save()
-
 
 		order, created = Order.objects.get_or_create(customer=customer, complete=False)
 		items = order.orderitem_set.all()
@@ -81,7 +80,9 @@ def order_processing(request, json_data, transaction_id):
 	order.transaction_id = transaction_id + str(randint(1000,5000))
 
 	if float(total) == float(order.get_cart_total):
+		status = Status.objects.first()
 		order.complete = True
+		order.status = status
 		order.save()
 
 

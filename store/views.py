@@ -15,16 +15,20 @@ def home(request):
 
 	if request.user.is_authenticated:
 		orders = Order.objects.filter(customer = request.user.customer)
-		first_order = orders[0]
+
+		for order in orders:
+			if order.complete:
+				is_any_complete = True
+				break
 	else:
 		orders = []
-		first_order = None
+		is_any_complete = False
 
 	context = {
 		"products": products,
 		"cartItems": cartItems,
 		"orders": orders,
-		"first_order": first_order
+		"is_any_complete": is_any_complete
 	}
 	return render(request, "store/home.html", context)
 
@@ -75,6 +79,6 @@ def order_detail(request, transaction_id):
 	order = Order.objects.get(transaction_id=transaction_id)
 
 	context = {
-		"order": order
+		"order": order,
 	}
 	return render(request, "store/order_detail.html", context)

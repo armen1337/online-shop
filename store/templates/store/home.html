@@ -6,15 +6,13 @@
 {% block content %}
 	
 	<div>
-		{% if first_order.complete %}
+		{% if is_any_complete %}
 			<h3> Мои заказы </h3>
 		{% endif %}
 		{% for order in orders %}
 			{% if order.complete %}
-				<p><a href="{{ order.get_absolute_url }}"> {{ order.transaction_id }} </a>
-					{% if order.confirmed %}
-						<i> - Принято для отправки </i>
-					{% endif %}
+				<p><a href="{{ order.get_absolute_url }}"> {{ order.transaction_id }}</a>
+					<i> - {{ order.status.name }} </i>
 				</p>
 			{% endif %}
 		{% endfor %}
