@@ -7,7 +7,6 @@ from register import views
 
 
 urlpatterns = [
-	path('grappelli/', include('grappelli.urls')),
     path('admin/', admin.site.urls),
     path("", include('store.urls')),
     path('register/', views.register_index, name="register"),

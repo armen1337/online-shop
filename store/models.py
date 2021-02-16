@@ -53,8 +53,6 @@ class Product(models.Model):
 	image = models.ImageField(
 			"Картинка",
 			upload_to = "products/",
-			null = True,
-			blank = True
 		)
 	draft = models.BooleanField("Черновик", default = False)
 	category = models.ForeignKey(
@@ -144,7 +142,9 @@ class Order(models.Model):
 
 class OrderItem(models.Model):
 	""" Same "Product" model but with capacity
-	of changing the quantity.
+	of changing the quantity. This model's
+	item is used in cart (i.e. Order object
+	which complete parameter is False)
 	"""
 	product = models.ForeignKey(
 			Product,

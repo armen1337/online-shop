@@ -4,7 +4,9 @@ from django.utils.safestring import mark_safe
 from .models import (Category, Customer, Product, Order,
 	OrderItem, ShippingAddress, Status)
 
-# Grappelli customisation - https://django-grappelli.readthedocs.io/en/latest/customization.html
+admin.site.site_header = "Онлайн магазин"
+admin.site.site_title = "Онлайн магазин"
+admin.site.index_title = "Администрирование онлайн магазина"
 
 admin.site.register(Status)
 admin.site.register(ShippingAddress)
@@ -13,7 +15,7 @@ admin.site.register(ShippingAddress)
 class OrderItemInline(admin.StackedInline):
 	model = OrderItem
 	extra = 0
-	classes = ('grp-collapse grp-closed',)
+	classes = ('collapse',)
 
 	readonly_fields = ('product', 'quantity', "date_added")
 
@@ -27,7 +29,7 @@ class OrderItemInline(admin.StackedInline):
 class ShippingAddressInline(admin.StackedInline):
 	model = ShippingAddress
 	extra = 0
-	classes = ('grp-collapse',)
+	classes = ('collapse',)
 	add_form_template = False
 
 
@@ -85,7 +87,20 @@ class ProductAdmin(admin.ModelAdmin):
 	list_display = ("name", "price", "category", "get_image", "draft")
 	list_editable = ("draft",)
 
+	readonly_fields = ("get_larger_image",)
+
+	fields = ("name", "price", "get_larger_image", "image", "category", "draft")
+
 
 	def get_image(self, obj):
 		""" Постер в списке фильмов """
-		return mark_safe(f'<img src="{obj.imageURL}" width="50" height="60">')
+		return mark_safe(f'<img src="{obj.image.url}" width="70" height="60">')
+
+	def get_larger_image(self, obj):
+		""" Постер в списке фильмов """
+		return mark_safe(f"""<img src="{obj.image.url}" width="200" height="170"
+			style="border: 1px solid gray; padding: 4px;">""")
+
+
+	get_image.short_description = "Картинка"
+	get_larger_image.short_description = "Картинка"
