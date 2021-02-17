@@ -16,6 +16,7 @@ def home(request):
 	if request.user.is_authenticated:
 		orders = Order.objects.filter(customer = request.user.customer)
 
+		is_any_complete = False
 		for order in orders:
 			if order.complete:
 				is_any_complete = True
@@ -28,7 +29,7 @@ def home(request):
 		"products": products,
 		"cartItems": cartItems,
 		"orders": orders,
-		"is_any_complete": is_any_complete
+		"is_any_complete": is_any_complete,
 	}
 	return render(request, "store/home.html", context)
 
