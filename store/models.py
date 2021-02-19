@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.db.models.signals import pre_save
 
@@ -49,10 +50,15 @@ class Customer(models.Model):
 class Product(models.Model):
 	""" Product """
 	name = models.CharField("Название", max_length = 255, null = True)
-	price = models.DecimalField("Цена", max_digits = 7, decimal_places = 2)
+	price = models.DecimalField(
+			"Цена",
+			max_digits = 7,
+			decimal_places = 2
+		)
 	image = models.ImageField(
 			"Картинка",
 			upload_to = "products/",
+			null = True
 		)
 	draft = models.BooleanField("Черновик", default = False)
 	category = models.ForeignKey(
@@ -61,16 +67,23 @@ class Product(models.Model):
 			on_delete = models.SET_NULL,
 			null = True
 		)
+	discount = models.IntegerField(
+			"Скидка (%)",
+			validators = [
+					MinValueValidator(0),
+					MaxValueValidator(100)
+				],
+			default = 0
+		)
+
 
 	def __str__(self):
 		return self.name
 
-	def imageURL(self):
-		try:
-			url = self.image.url
-		except:
-			url = ''
-		return url
+	@property
+	def get_price(self):
+		x = (self.price * self.discount) / 100
+		return round(self.price - x, 2)
 
 	class Meta:
 		verbose_name = "Продукт"
@@ -122,13 +135,13 @@ class Order(models.Model):
 
 	@property
 	def get_cart_total(self):
-		orderitems = self.orderitem_set.all()
+		orderitems = self.orderitem_set.filter(product__draft = False)
 		total = sum([item.get_total for item in orderitems])
 		return total
 
 	@property
 	def get_cart_items(self):
-		orderitems = self.orderitem_set.all()
+		orderitems = self.orderitem_set.filter(product__draft = False)
 		total = sum([item.quantity for item in orderitems])
 		return total
 
@@ -166,7 +179,7 @@ class OrderItem(models.Model):
 	@property
 	def get_total(self):
 		""" Возвращает общую сумму в корзине """
-		total = self.product.price * self.quantity
+		total = self.product.get_price * self.quantity
 		return total
 
 	def __str__(self):

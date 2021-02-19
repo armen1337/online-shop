@@ -17,8 +17,13 @@
 						<th><h5> Итого: <strong>${{ order.get_cart_total }}</strong></h5></th>
 						<th>
 							{% if user.is_authenticated %}
-								<a href="{% url 'checkout' %}" class="btn btn-success" style="float: right; margin: 5px;"> Оформить заказ
-								</a>
+								{% if order.orderitem_set.all|length_is:0 %}
+									<a href="{% url 'home' %}" class="btn btn-success" style="float: right; margin: 5px;"> Оформить заказ
+									</a>
+								{% else %}
+									<a href="{% url 'checkout' %}" class="btn btn-success" style="float: right; margin: 5px;"> Оформить заказ
+									</a>
+								{% endif %}
 							{% else %}
 								<a href="{% url 'register' %}" class="btn btn-success" style="float: right; margin: 5px;"> Оформить заказ
 								</a>
@@ -45,14 +50,14 @@
 				{% for item in items %}
 					<div class="cart-row">
 						<div style="flex: 2;">
-							{% if item.product.imageURL %}
-								<img src="{{ item.product.imageURL }}" class="row-image" style="border: 1px solid gray;">
+							{% if item.product.image.url %}
+								<img src="{{ item.product.image.url }}" class="row-image" style="border: 1px solid gray;">
 							{% else %}
 								<img src="{% static 'img/no-image-found.png' %}" class="row-image" style="border: 1px solid gray;">
 							{% endif %}
 						</div>
 						<div style="flex: 2;">{{item.product.name}}</div>
-						<div style="flex: 1;">${{item.product.price }}</div>
+						<div style="flex: 1;">${{item.product.get_price }}</div>
 						<div style="flex: 1;">
 							<p class="quantity">{{item.quantity}}</p>
 							<div class="quantity">

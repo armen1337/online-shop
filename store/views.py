@@ -45,13 +45,19 @@ def cart(request):
 
 
 def checkout(request):
-	if not request.user.is_authenticated:
+	if not request.user.is_authenticated: # or cart is empty
 		return redirect("home")
+
 	order_and_items = get_order_and_items(request)
+
+	order = order_and_items["order"]
+
+	if len(order.orderitem_set.all()) == 0:
+		return redirect("home")
 
 	context = {
 		"items": order_and_items["items"],
-		"order": order_and_items["order"],
+		"order": order,
 	}
 	return render(request, "store/checkout.html", context)
 

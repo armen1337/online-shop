@@ -60,8 +60,8 @@
 			{% for item in items %}
 				<div class="cart-row">
 					<div style="flex: 2;">
-						{% if item.product.imageURL %}
-							<img src="{{ item.product.imageURL }}"
+						{% if item.product.image.url %}
+							<img src="{{ item.product.image.url }}"
 							class="row-image" style="border: 1px solid gray;">
 						{% else %}
 							<img src="{% static 'img/no-image-found.png' %}"
@@ -69,7 +69,7 @@
 						{% endif %}
 					</div>
 					<div style="flex: 2;"><p>{{ item.product.name }}</p></div>
-					<div style="flex: 1;"><p>${{ item.product.price }}</p></div>
+					<div style="flex: 1;"><p>${{ item.product.get_price }}</p></div>
 					<div style="flex: 1;"><p>x{{ item.quantity }}</p></div>
 				</div>
 			{% endfor %}

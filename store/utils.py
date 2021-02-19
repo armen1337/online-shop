@@ -25,8 +25,11 @@ def get_order_and_items(request):
 				)
 			customer.save()
 
-		order, created = Order.objects.get_or_create(customer=customer, complete=False)
-		items = order.orderitem_set.all()
+		order, created = Order.objects.get_or_create(
+				customer=customer,
+				complete=False
+			)
+		items = order.orderitem_set.filter(product__draft = False)
 		cartItems = order.get_cart_items
 
 	else:

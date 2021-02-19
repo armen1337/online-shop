@@ -93,12 +93,28 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-	list_display = ("name", "price", "category", "get_image", "draft")
+	list_display = (
+			"name",
+			"price",
+			"get_absolute_price",
+			"category",
+			"get_image",
+			"draft"
+		)
 	list_editable = ("draft",)
 
-	readonly_fields = ("get_larger_image",)
+	readonly_fields = ("get_larger_image", "get_absolute_price")
 
-	fields = ("name", "price", "get_larger_image", "image", "category", "draft")
+	fields = (
+			"name",
+			"price",
+			"get_larger_image",
+			"image",
+			"category",
+			"draft",
+			"discount",
+			"get_absolute_price"
+		)
 
 
 	def get_image(self, obj):
@@ -110,6 +126,10 @@ class ProductAdmin(admin.ModelAdmin):
 		return mark_safe(f"""<img src="{obj.image.url}" width="200" height="170"
 			style="border: 1px solid gray; padding: 4px;">""")
 
+	def get_absolute_price(self, obj):
+		return f"${obj.get_price}"
+
 
 	get_image.short_description = "Картинка"
 	get_larger_image.short_description = "Картинка"
+	get_absolute_price.short_description = "Цена в скидке"
