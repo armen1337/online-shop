@@ -4,12 +4,22 @@ from django.utils.safestring import mark_safe
 from .models import (Category, Customer, Product, Order,
 	OrderItem, ShippingAddress, Status)
 
+
 admin.site.site_header = "Онлайн магазин"
 admin.site.site_title = "Онлайн магазин"
 admin.site.index_title = "Администрирование онлайн магазина"
 
-admin.site.register(Status)
+
 admin.site.register(ShippingAddress)
+
+
+class CategoryInline(admin.StackedInline):
+	model = Category
+	extra = 1
+	classes = ("collapse",)
+	verbose_name = "Подкатегория"
+	verbose_name_plural = "Подкатегории"
+	fields = ("name",)
 
 
 class OrderItemInline(admin.StackedInline):
@@ -33,6 +43,13 @@ class ShippingAddressInline(admin.StackedInline):
 	add_form_template = False
 
 
+@admin.register(Status)
+class StatusAdmin(admin.ModelAdmin):
+	model = Status
+
+	list_display = ("id", "name")
+
+
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
 	model = Order
@@ -40,7 +57,7 @@ class OrderAdmin(admin.ModelAdmin):
 	# save_on_top = True
 
 	list_filter = ("complete", "status")
-	list_display = ("id", "customer", "complete", "status")
+	list_display = ("id", "customer", "complete", "status", "date_ordered")
 	list_display_links = ("id", "customer")
 
 	readonly_fields = (
@@ -63,14 +80,6 @@ class OrderAdmin(admin.ModelAdmin):
 					)
 			}),
 	)
-
-class CategoryInline(admin.StackedInline):
-	model = Category
-	extra = 1
-	classes = ("collapse",)
-	verbose_name = "Подкатегория"
-	verbose_name_plural = "Подкатегории"
-	fields = ("name",)
 
 
 @admin.register(Category)

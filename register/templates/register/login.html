@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %} Войти {% endblock %}
+
+{% block content %}
+
+<div class="features">
+	<h1> Войдите в ваш аккаунт </h1>
+	<form method="POST">
+		{% csrf_token %}
+
+		<p><input type="text" name="username" placeholder="Username"
+		class="textinput textInput form-control"></p>
+
+		<p><input type="password" name="password" placeholder="Password"
+		class="textinput textInput form-control"></p>
+
+		{% for message in messages %}
+			<p style="color: red;"> {{ message }} </p>
+		{% endfor %}
+
+		<a href="{% url 'register' %}"> Ещё нет аккаунта? </a><br>
+		<button type="submit" class="btn btn-warning" style="margin-top: 20px;"> Войти </button>
+	</form>
+</div>
+{% endblock %}
