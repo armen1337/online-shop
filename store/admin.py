@@ -12,6 +12,7 @@ admin.site.index_title = "Администрирование онлайн маг
 
 admin.site.register(ShippingAddress)
 
+# DELETE feature of adding items for inline blocks
 
 class CategoryInline(admin.StackedInline):
 	model = Category
@@ -27,13 +28,30 @@ class OrderItemInline(admin.StackedInline):
 	extra = 0
 	classes = ('collapse',)
 
-	readonly_fields = ('product', 'quantity', "date_added")
+	readonly_fields = (
+			'product',
+			'quantity',
+			"date_added",
+			"get_total_price",
+			"get_product_id"
+		)
 
-	fieldsets = (
-		(None, {
-				"fields": (("product"), ("quantity"), ("date_added") )
-			}),
-	)
+	fields =  (
+			"product",
+			"get_product_id",
+			"quantity",
+			# "date_added",
+			"get_total_price"
+		)
+
+	def get_total_price(self, obj):
+		return f"${obj.get_total}"
+
+	def get_product_id(self, obj):
+		return obj.product.id
+
+	get_total_price.short_description = "Итоговая цена"
+	get_product_id.short_description = "ID продукта"
 
 
 class ShippingAddressInline(admin.StackedInline):
@@ -41,6 +59,20 @@ class ShippingAddressInline(admin.StackedInline):
 	extra = 0
 	classes = ('collapse',)
 	add_form_template = False
+
+	readonly_fields = (
+			"customer",
+			"address",
+			"city",
+			"zip_code",
+			"date_added"
+		)
+
+	fields = (
+			"address",
+			"city",
+			"zip_code",
+		)
 
 
 @admin.register(Status)
@@ -57,14 +89,21 @@ class OrderAdmin(admin.ModelAdmin):
 	# save_on_top = True
 
 	list_filter = ("complete", "status")
-	list_display = ("id", "customer", "complete", "status", "date_ordered")
+	list_display = (
+			"id",
+			"customer",
+			"complete",
+			"status",
+			"date_ordered",
+		)
 	list_display_links = ("id", "customer")
 
 	readonly_fields = (
 			"date_ordered",
 			"complete",
 			"transaction_id",
-			"customer"
+			"customer",
+			"get_cart_total_price"
 		)
 
 	inlines = [ShippingAddressInline, OrderItemInline]
@@ -76,10 +115,17 @@ class OrderAdmin(admin.ModelAdmin):
 						("date_ordered"),
 						("complete"),
 						("transaction_id"),
-						("status")
+						("status"),
+						("get_cart_total_price")
 					)
 			}),
 	)
+
+
+	def get_cart_total_price(self, obj):
+		return f"${obj.get_cart_total}"
+
+	get_cart_total_price.short_description = "Итоговая цена"
 
 
 @admin.register(Category)
@@ -116,13 +162,10 @@ class ProductAdmin(admin.ModelAdmin):
 			"get_absolute_price"
 		)
 
-
 	def get_image(self, obj):
-		""" Постер в списке фильмов """
 		return mark_safe(f'<img src="{obj.image.url}" width="70" height="60">')
 
 	def get_larger_image(self, obj):
-		""" Постер в списке фильмов """
 		return mark_safe(f"""<img src="{obj.image.url}" width="200" height="170"
 			style="border: 1px solid gray; padding: 4px;">""")
 
