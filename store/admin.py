@@ -9,8 +9,8 @@ admin.site.site_header = "Онлайн магазин"
 admin.site.site_title = "Онлайн магазин"
 admin.site.index_title = "Администрирование онлайн магазина"
 
-
-admin.site.register(ShippingAddress)
+# unimportant
+# admin.site.register(ShippingAddress)
 
 # DELETE feature of adding items for inline blocks
 

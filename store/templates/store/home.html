@@ -15,12 +15,20 @@
 						<img src="{% static 'img/no-image-found.png' %}" class="thumbnail">
 					{% endif %}
 					<div class="box-element product">
-						<h6><strong> {{ product.name }} </strong></h6>
+						<h6><strong> {{ product.name }} </strong>
+							{% if product.discount > 0 %}
+								<ins>-{{ product.discount }}%</ins>
+							{% endif %}
+						</h6>
 						<hr>
 						<button data-product={{product.id}} data-action="add"
 						class="btn btn-outline-secondary add-btn update-cart">Добавить в корзину</button>
 						<a href="#" class="btn btn-outline-success"> Смотреть </a>
-						<h4 style="display: inline-block; float: right;"> ${{ product.get_price }} </h4>
+						<h5 style="display: inline-block; float: right;">
+							{% if product.discount > 0 %}
+								<del>${{ product.price }}</del>
+							{% endif %}
+						${{ product.get_price }} </h5>
 					</div>
 				</div>
 			{% endif %}
