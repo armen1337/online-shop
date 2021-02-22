@@ -5,6 +5,14 @@
 
 {% block content %}
 
+	<!-- Hero Images -->
+
+	{% for hero_image in hero_images %}
+		{% if hero_image.enabled %}
+			<p><img src="{{ hero_image.image.url }}" width="400px"></p>
+		{% endif %}
+	{% endfor %}
+
 	<div class="row">
 		{% for product in products %}
 			{% if not product.draft %}

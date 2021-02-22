@@ -48,7 +48,7 @@ class Customer(models.Model):
 
 
 class Product(models.Model):
-	""" Product """
+	""" Product model	"""
 	name = models.CharField("Название", max_length = 255, null = True)
 	price = models.DecimalField(
 			"Цена",

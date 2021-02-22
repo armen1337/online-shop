@@ -140,16 +140,24 @@ class CategoryAdmin(admin.ModelAdmin):
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
 	list_display = (
+			"id",
 			"name",
 			"price",
-			"get_absolute_price",
+			"get_absolute_price_in_list",
 			"category",
 			"get_image",
 			"draft"
 		)
+
+	list_display_links = ("id", "name")
 	list_editable = ("draft",)
 
-	readonly_fields = ("get_larger_image", "get_absolute_price")
+	search_fields = ("name", "id")
+	readonly_fields = (
+			"get_larger_image",
+			"get_absolute_price",
+			"get_absolute_price_in_list"
+		)
 
 	fields = (
 			"name",
@@ -172,7 +180,11 @@ class ProductAdmin(admin.ModelAdmin):
 	def get_absolute_price(self, obj):
 		return f"${obj.get_price}"
 
+	def get_absolute_price_in_list(self, obj):
+		return f"${obj.get_price} ({obj.discount}%)"
+
 
 	get_image.short_description = "Картинка"
 	get_larger_image.short_description = "Картинка"
 	get_absolute_price.short_description = "Цена в скидке"
+	get_absolute_price_in_list.short_description = "Цена в скидке"

@@ -33,6 +33,7 @@ def get_order_and_items(request):
 		cartItems = order.get_cart_items
 
 	else:
+		""" Cookies """
 		try:
 			cart = json.loads(request.COOKIES['cart'])
 		except:
@@ -45,6 +46,9 @@ def get_order_and_items(request):
 			try:
 				product = Product.objects.get(id=i)
 
+				if product.draft:
+					continue
+
 			except ObjectDoesNotExist as DoesNotExist:
 				continue
 
@@ -56,13 +60,7 @@ def get_order_and_items(request):
 			order["get_cart_items"] += cart[i]["quantity"]
 
 			item = {
-				"product": {
-					"id": product.id,
-					"name": product.name,
-					"price": product.price,
-					"imageURL": product.imageURL,
-					"draft": product.draft
-					},
+				"product": product,
 				"quantity": cart[i]["quantity"],
 				"get_total": total
 				}
@@ -78,12 +76,15 @@ def get_order_and_items(request):
 
 def order_processing(request, json_data, transaction_id):
 	customer = request.user.customer
-	order, created = Order.objects.get_or_create(customer=customer, complete=False)
+	order, created = Order.objects.get_or_create(
+			customer=customer,
+			complete=False
+		)
 	total = float( json_data["form"]["total"].replace(',', '.') )
 	order.transaction_id = transaction_id + str(randint(1000,5000))
 
 	if float(total) == float(order.get_cart_total):
-		status = Status.objects.first()
+		status = Status.objects.get(value = "pending")
 		order.complete = True
 		order.status = status
 		order.save()
@@ -105,9 +106,15 @@ def item_updating(request):
 
 	customer = request.user.customer
 	product = Product.objects.get(id=productId)
-	order, created = Order.objects.get_or_create(customer=customer, complete=False)
+	order, created = Order.objects.get_or_create(
+			customer = customer,
+			complete = False
+		)
 
-	orderItem, created = OrderItem.objects.get_or_create(order=order, product=product)
+	orderItem, created = OrderItem.objects.get_or_create(
+			order = order,
+			product = product
+		)
 
 	if action == "add":
 		orderItem.quantity = (orderItem.quantity + 1)

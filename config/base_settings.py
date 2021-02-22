@@ -30,6 +30,7 @@ INSTALLED_APPS = [
 
     "crispy_forms",
 
+    'main.apps.MainConfig',
     'store.apps.StoreConfig',
     'register.apps.RegisterConfig',
 ]

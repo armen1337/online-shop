@@ -1,4 +1,5 @@
 venv/
 *.odt
+*.odt#
 env_vars.sh
-runserver.sh
+*.sh

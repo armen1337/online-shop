@@ -7,6 +7,7 @@ import datetime
 from .models import Product, Order, OrderItem, ShippingAddress
 from .utils import (get_order_and_items,
 	order_processing, item_updating)
+from main.models import HeroImageConf
 
 
 def home(request):
@@ -25,11 +26,20 @@ def home(request):
 		orders = []
 		is_any_complete = False
 
+
+	hero_image_conf = HeroImageConf.objects.filter(enabled = True).first()
+	try:
+		hero_images = hero_image_conf.heroimage_set.all()
+	except:
+		hero_images = None
+
 	context = {
 		"products": products,
 		"cartItems": cartItems,
 		"orders": orders,
 		"is_any_complete": is_any_complete,
+
+		"hero_images": hero_images
 	}
 	return render(request, "store/home.html", context)
 
