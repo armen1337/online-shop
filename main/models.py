@@ -32,3 +32,6 @@ class HeroImage(models.Model):
 			null = True
 		)
 	enabled = models.BooleanField(default = True)
+
+	def __str__(self):
+		return ""

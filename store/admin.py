@@ -88,6 +88,8 @@ class OrderAdmin(admin.ModelAdmin):
 
 	# save_on_top = True
 
+	search_fields = ("customer__name", "id", "transaction_id")
+
 	list_filter = ("complete", "status")
 	list_display = (
 			"id",
