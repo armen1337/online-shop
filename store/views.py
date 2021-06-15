@@ -1,12 +1,12 @@
-from django.shortcuts import render, redirect
-from django.http import JsonResponse
-
 import json
 import datetime
 
+from django.shortcuts import render, redirect
+from django.http import JsonResponse
+
 from .models import Product, Order, OrderItem, ShippingAddress
 from .utils import (get_order_and_items,
-	order_processing, item_updating)
+    	order_processing, item_updating)
 from main.models import HeroImageConf
 
 

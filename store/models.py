@@ -58,7 +58,8 @@ class Product(models.Model):
 	image = models.ImageField(
 			"Картинка",
 			upload_to = "products/",
-			null = True
+			null = True,
+			blank = True
 		)
 	draft = models.BooleanField("Черновик", default = False)
 	category = models.ForeignKey(
